@@ -3,7 +3,7 @@
 class number {
 public:
 	number(int number_t);
-	void printRow();
+	std::string printRow();
 	bool isNumberRow();
 private:
 	void getMultipliers();

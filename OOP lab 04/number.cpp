@@ -1,16 +1,17 @@
 #include "number.h"
 #include <iostream>
-
+#include <string>
 number::number(int number_t) : thisNumber(number_t)
 {
 	getMultipliers();
 }
 
-void number::printRow()
+std::string number::printRow()
 {
-	std::cout << thisNumber <<" = " << multipliers[0];
+	std::string result;
+	result =  std::to_string(thisNumber) +" = " + std::to_string(multipliers[0]);
 	for (size_t i = 1; i < multipliers.size();i++) {
-		std::cout << " * "<< multipliers[i] ;
+		result =  " * " +  std::to_string(multipliers[i]);
 	}
 	std::cout << std::endl;
 }

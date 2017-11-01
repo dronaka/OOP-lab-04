@@ -142,6 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="functionForThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="number.cpp" />
   </ItemGroup>
