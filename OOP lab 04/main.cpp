@@ -4,19 +4,17 @@
 
 using namespace std;
 
+
+
 int main() {
-	number a(4);
-	a.printRow();
-	number b(98);
-	b.printRow();
-	number c(366);
-	c.printRow();
-	number d(23);
-	d.printRow();
-	number e(32);
-	e.printRow();
+	number*aa = new number(124);
+	number a(345);
+	thread potok1(&number::printRow,a);
+	
+	
 
 
+	potok1.join();
 	system("pause");
 	return 0;
 }
