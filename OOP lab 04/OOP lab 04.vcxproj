@@ -147,6 +147,7 @@
     <ClCompile Include="number.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="functionForThread.h" />
     <ClInclude Include="number.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
