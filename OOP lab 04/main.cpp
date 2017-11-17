@@ -1,20 +1,17 @@
 #include <thread>
 #include <vector>
 #include "number.h"
-
+#include <iostream>
+#include <string>
 
 using namespace std;
 
 
 
 int main() {
-	number*aa = new number(124);
-	number a(345);
-	thread potok1(&number::printRow,a);
-	
+	number a(2147483646);
+	cout << a.printRow();
 
-
-	potok1.join();
 	system("pause");
 	return 0;
 }
