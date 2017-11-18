@@ -21,15 +21,9 @@
     <ClCompile Include="number.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="functionForThread.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="functionForThread.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
