@@ -11,16 +11,25 @@ using namespace std;
 
 
 int main() {
-	mutex lock;
-	number	lol;
+	number	lol(1);
 	fstream file("D:\\in.txt");
-	int a;
+	string a;
+//	int b;
 	while (file >> a) {
-
-		lol.setNumber(a);
-		
+		if (a == "exit")
+			lol.setExitSignal();
+		else
+			if (a == "pause")
+				lol.setPauseSignal(1);
+			else
+				if (a == "resume")
+					lol.setPauseSignal(0);
+				else {
+					int b = stoi(a);
+					lol.setNumber(b);
+				}
 	}
-	lol.~number();
-	system("pause");
+	//lol.~number();
+	//system("pause");
 	return 0;
 }

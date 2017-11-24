@@ -1,5 +1,6 @@
 #include "number.h"
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <thread>
 #include <queue>
@@ -12,16 +13,22 @@ number::number()
 
 number::~number()
 {
-	std::mutex endLock;
-	endLock.lock();
+	//std::clog << "Death\n";
+	std::unique_lock<std::mutex> lock1(mutexQueue);
 	end = true;
-	endLock.unlock();
-	thr->join();
+	//cond_var.notify_all();
+	lock1.unlock();
+	//thr->join();
+	for (auto &i : threads) {
+		i.join();
+	}
 }
 
-number::number(int number_t) : thisNumber(number_t)
+number::number(int number_t)
 {
-	factorization();
+	for (int i = 0; i < number_t; i++) {
+		threads.emplace_back([this]() {factorization(); });
+	}
 }
 
 void number::setNumber(int number_t)
@@ -34,7 +41,7 @@ void number::setNumber(int number_t)
 	cond_var.notify_one();
 }
 
-std::string number::printRow()
+std::string number::printRow(std::vector<int>& multipliers)
 {
 	std::string result;
 	result =  std::to_string(thisNumber) +" = " + std::to_string(multipliers[0]);
@@ -44,6 +51,7 @@ std::string number::printRow()
 	return result;
 }
 
+/*
 bool number::isNumberRow()
 {
 	int result = 1;
@@ -52,29 +60,41 @@ bool number::isNumberRow()
 	}
 	return (result == thisNumber) ? true : false;
 }
-
+*/
 void number::factorization()
 {
-	thr = new std::thread(&number::getMultipliers,this);	
+	std::thread *thr = new std::thread(&number::getMultipliers,this);	
 }
 
 void number::getMultipliers()
 {
+	std::clog << "1\n";
 	int curNumber;
-	while (!end || !numbers.empty()) {
+	file.open("D:\\out.txt", std::ios::app);
+	while (true) {
 		std::unique_lock<std::mutex> lock1(mutexQueue);
-		cond_var.wait(lock1, [this] {return !numbers.empty(); });
-		int divider = 2;
+		std::cout << ">> 1 " << std::endl;
+		cond_var.wait(lock1, [this] {return (!numbers.empty() || end || exit); });
+		if (numbers.empty() && (end  || exit)) {
+			file.close();
+			break;
+		}
+
+		if (pause) {
+			cond_var.wait(lock1, [this] { return !pause; });
+		}
 
 		curNumber = numbers.front();
 		numbers.pop();
 		thisNumber = curNumber;
-	
-			lock1.unlock();
-		std::unique_lock<std::mutex> lock(mutexDividers);
 
+		
+		lock1.unlock();
+		std::cout << ">> 2 " << std::endl;
+		int divider = 2;
 
 		// algo
+		std::vector<int> multipliers;
 		multipliers.clear();
 		while (divider <= sqrt(curNumber)) {
 			if (curNumber % divider == 0) {
@@ -86,14 +106,27 @@ void number::getMultipliers()
 		if (curNumber != 1) {
 			multipliers.push_back(curNumber);
 		}
-		//
+		std::cout << ">> 3 " << std::endl;
 
-		//mutexDividers.unlock();
+		std::unique_lock<std::mutex> lock(mutexDividers);
 
+		if (exit) {
+			file.close();
+			break;
+		}
+
+		std::cout << ">> 4 " << std::endl;
+
+		std::string result;
+		result = std::to_string(thisNumber) + " = " + std::to_string(multipliers[0]);
+		for (size_t i = 1; i < multipliers.size(); i++) {
+			result = result + " * " + std::to_string(multipliers[i]);
+		}
+		std::cout << ">> 5 " << std::endl;
+		file << result << std::endl;
+		std::cout << ">> 6 " << std::endl;
+		//file << printRow(multipliers) << std::endl;
 		lock.unlock();
-		file.open("D:\\out.txt", std::ios::app);
-		file << printRow() << std::endl;
-		file.close();
 	}
 }
 
