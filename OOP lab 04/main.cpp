@@ -11,11 +11,12 @@ using namespace std;
 
 
 int main() {
-	number	lol(1);
-	fstream file("D:\\in.txt");
+	number	lol(4);
+
+	fstream file1("D:\\in.txt");
 	string a;
 //	int b;
-	while (file >> a) {
+	while (file1 >> a) {
 		if (a == "exit")
 			lol.setExitSignal();
 		else

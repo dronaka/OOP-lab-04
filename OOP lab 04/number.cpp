@@ -8,7 +8,7 @@
 
 number::number()
 {
-	factorization();
+	//factorization();
 }
 
 number::~number()
@@ -22,12 +22,75 @@ number::~number()
 	for (auto &i : threads) {
 		i.join();
 	}
+	file.close();
 }
 
 number::number(int number_t)
 {
 	for (int i = 0; i < number_t; i++) {
-		threads.emplace_back([this]() {factorization(); });
+		threads.emplace_back([this]() {
+			std::clog << "1\n";
+			int curNumber;
+			if (!file.is_open()) {
+				file.open("D:\\out.txt", std::ios::app);
+			}
+			while (true) {
+				std::unique_lock<std::mutex> lock1(mutexQueue);
+
+				cond_var.wait(lock1, [this] {return (!numbers.empty() || end || exit); });
+				if (numbers.empty() && (end || exit)) {
+					//file.close();
+					break;
+				}
+
+				if (pause) {
+					cond_var.wait(lock1, [this] { return !pause; });
+				}
+
+				curNumber = numbers.front();
+				numbers.pop();
+				
+
+
+				lock1.unlock();
+				int thisNumber = curNumber;
+				int divider = 2;
+
+				// algo
+				std::vector<int> multipliers;
+				multipliers.clear();
+				while (divider <= sqrt(curNumber)) {
+					if (curNumber % divider == 0) {
+						multipliers.push_back(divider);
+						curNumber /= divider;
+					}
+					else divider++;
+				}
+				if (curNumber != 1) {
+					multipliers.push_back(curNumber);
+				}
+
+
+				std::unique_lock<std::mutex> lock(mutexDividers);
+
+				if (exit) {
+					file.close();
+					break;
+				}
+
+
+				std::string result;
+				result = std::to_string(thisNumber) + " = " + std::to_string(multipliers[0]);
+				for (size_t i = 1; i < multipliers.size(); i++) {
+					result = result + " * " + std::to_string(multipliers[i]);
+				}
+;
+				file << result << std::endl;
+
+				//file << printRow(multipliers) << std::endl;
+				lock.unlock();
+			}
+		});
 	}
 }
 
@@ -41,16 +104,17 @@ void number::setNumber(int number_t)
 	cond_var.notify_one();
 }
 
+/*
 std::string number::printRow(std::vector<int>& multipliers)
 {
 	std::string result;
-	result =  std::to_string(thisNumber) +" = " + std::to_string(multipliers[0]);
+	result =  std::to_string(curNumber) +" = " + std::to_string(multipliers[0]);
 	for (size_t i = 1; i < multipliers.size();i++) {
 		result = result + " * " +  std::to_string(multipliers[i]);
 	}
 	return result;
 }
-
+*/
 /*
 bool number::isNumberRow()
 {
@@ -61,11 +125,8 @@ bool number::isNumberRow()
 	return (result == thisNumber) ? true : false;
 }
 */
-void number::factorization()
-{
-	std::thread *thr = new std::thread(&number::getMultipliers,this);	
-}
 
+/*
 void number::getMultipliers()
 {
 	std::clog << "1\n";
@@ -130,3 +191,4 @@ void number::getMultipliers()
 	}
 }
 
+*/

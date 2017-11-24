@@ -9,6 +9,7 @@ class number {
 public:
 	number();
 	~number();
+	void openFile();
 	number(int number_t);
 	void setNumber(int number_t);
 	std::string printRow(std::vector<int>& multipliers);
@@ -19,9 +20,9 @@ public:
 private:
 	std::vector<std::thread> threads;
 	std::mutex mutexDividers,mutexQueue;
-	void factorization();
-	void getMultipliers();
-	int thisNumber;
+	//void factorization();
+	// getMultipliers();
+	//int thisNumber;
 	//std::vector<int> multipliers;
 	//std::thread *thr;
 	std::queue<int> numbers;
